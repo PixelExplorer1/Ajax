@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>模板引擎</title>
+    <script src="../js/template-web.js"></script>
+    <script src="../js/jQuery.min.js"></script>
+</head>
+<body>
+    <div class="container"></div>
+
+
+
+    <script type="text/html" id="gsq-user">
+        <h1>{{name}} ------ {{age}}</h1>
+        <h3>{{regTime | dateFormat}}</h3>
+    </script>
+
+    <script>
+        
+        var date = {name:'zs',age:12,regTime:new Date()}
+        /* 要放在template方法的前面 */
+        template.defaults.imports.dateFormat = function (data) {
+            var y = data.getFullYear()
+            var m = data.getMonth() +1
+            var d = data.getDate()
+            return y + '-' + m + '-' + d
+        }
+        var h = template('gsq-user',date)
+        
+        $('.container').html(h)
+    </script>
+
+</body>
+</html>

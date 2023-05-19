@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+
+    <form>
+        <input type="text" name="uname" autocomplete="off">
+        <input type="password" name="upwd">
+        <button type="submit">提交</button>
+    </form>
+    
+
+    <script>
+        //通过form属性提交表单
+        let form = document.querySelector('form')
+        form.addEventListener('submit',function(e){
+            e.preventDefault()
+
+            let fd = new FormData(form)
+            let xhr = new XMLHttpRequest()
+
+            //监听文件上传的进度
+            xhr.upload.onprogress = function (e) {
+                if (e.lengthComputable) {
+                    // 1. 计算出当前上传进度的百分比
+                    var percentComplete = Math.ceil((e.loaded / e.total) * 100)
+                    console.log(percentComplete);
+                }
+            }
+
+
+        xhr.open('POST','http://www.liulongbin.top:3006/api/formdata')
+        xhr.send(fd)
+        xhr.onreadystatechange = function(){
+            if(xhr.readyState === 4 && xhr.status === 200){
+                console.log(xhr.responseText);
+            }
+        }
+        })
+
+        /* let fd = new FormData()
+
+        fd.append('bookname','年年有余')
+        fd.append('author','ajax')
+        fd.append('publisher','前端出版社')
+        let xhr = new XMLHttpRequest()
+        xhr.open('POST','http://www.liulongbin.top:3006/api/formdata')
+        xhr.send(fd)
+        xhr.onreadystatechange = function(){
+            if(xhr.readyState === 4 && xhr.status === 200){
+                console.log(xhr.responseText);
+            }
+        } */
+    </script>
+</body>
+</html>

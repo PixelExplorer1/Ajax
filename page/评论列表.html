@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>评论列表</title>
+    <script src="../js/jQuery.min.js"></script>
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+</head>
+<body>
+    
+    <div class="panel panel-primary">
+          <div class="panel-heading">
+                <h3 class="panel-title">发表评论</h3>
+          </div>
+          <form class="panel-body" id="formComments" method="post">
+                <div>评论人：</div>
+                <input type="text" name="username" class="form-control" value="" required="required">
+                <div>发表评论：</div>
+                <textarea name="content" class="form-control" rows="3" required="required"></textarea>
+                <button type="submit" class="btn btn-primary" style="margin-top: 10px;">提交</button>
+          </form>
+    </div>
+    
+    <ul class="list-group">
+        
+    </ul>
+    
+    <script>
+        /* 渲染评论列表 */
+        function getComments(){
+            $.ajax({
+                type:'GET',
+                url:'http://www.liulongbin.top:3006/api/cmtlist',
+                success:function(res){
+                    $.each(res.data,function(i,e){
+                        let s = $(`<li class="list-group-item">
+            <span class="badge" style="background-color: #f0ad4e;">发布时间：${e.time}</span>
+            <span class="badge" style="background-color: #5bc0de;">评论人：${e.username}</span>
+            ${e.content}
+        </li>`)
+        $('.list-group').append(s)
+                    })
+                    
+            
+                }
+            })
+        }
+
+        /* 提交评论 */
+        function postComments(d){
+            $.ajax({
+                type:'POST',
+                url:'http://www.liulongbin.top:3006/api/addcmt',
+                data:d,
+                success:function(res){
+                    if(res.status !== 201) return alert('上传失败')
+                    $('.list-group').children().remove()
+                    getComments()
+                }
+            })
+        }
+
+        /* 提交按钮 */
+        $('#formComments').on('submit',function(e){
+            e.preventDefault()
+            let data = $(this).serialize()
+            postComments(data)
+            $('.content').val('')
+            $('#formComments')[0].reset()   
+        })
+        getComments()
+    </script>
+    
+</body>
+</html>

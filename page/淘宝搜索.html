@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="../js/jQuery.min.js"></script>
+    <script src="../js/template-web.js"></script>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        .content{
+            margin-top: 6.5104vw;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .content .search{
+            margin-top: 6.5104vw;
+            width: 600px;
+        }
+
+        .search .title span{
+            cursor: pointer;
+            display: inline-block;
+            width: 50px;
+            text-align: center;
+            height: 25px;
+            line-height: 25px;
+            font-size: 10px;
+        }
+
+        .search .title span:nth-child(1){
+            background-color: rgb(255, 94, 0);
+            color: #fff;
+        }
+
+        .search .title span:nth-child(2):hover{
+            color: rgb(255, 94, 0);
+            text-decoration: underline;
+        }
+
+        .sear{
+            position: relative;
+        }
+
+        #search{
+            width: 500px;
+            outline: none;
+            height: 35px;
+            border: 1px solid rgb(255, 94, 0);
+            padding: 2px 10px;
+        }
+
+        .sear span{
+            position: absolute;
+            display: inline-block;
+            width: 70px;
+            height: 35px;
+            text-align: center;
+            line-height: 35px;
+            background-color: rgb(255, 94, 0);
+            color: #fff;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .suggest{
+            border: 1px solid #cdcdcd;
+            border-top: none;
+            width: 570px;
+        }
+
+        .suggest div{
+            width: 100%;
+            padding: 5px 10px;
+            cursor: pointer;
+            font-size: 10px;
+        }
+
+        .suggest div:hover{
+            background-color: #cdcdcd;
+        }
+    </style>
+</head>
+<body>
+    <div class="content">
+        <img src="../img/taobao_logo.png">
+        <div class="search">
+            <div class="title">
+                <span>宝贝</span>
+                <span>店铺</span>
+            </div>
+            <div class="sear">
+                <input type="search" id="search" placeholder="请输入要搜索的内容">
+                <span>搜 索</span>
+            </div>
+            <div class="suggest">
+                
+            </div>
+        </div>
+    </div>
+
+    <script type="text/html" id="suggest-list">
+        {{each result}}
+        <div>{{$value[0]}}</div>
+        {{/each}}
+    </script>
+
+    <script>
+        $(function(){
+            /* 防抖定时器 */
+            let timer = null
+            //缓存对象
+            let cacheObj = {}
+
+            function debounceSearch(keywords){
+                timer = setTimeout(function(){
+                    getSuggestList(keywords)
+                },500)
+            }
+
+            $('#search').on('keyup',function(){
+                clearTimeout(timer)
+                let keywords = $(this).val().trim()
+                if(keywords <= 0) {
+                    return $('.suggest').empty().hide()
+                }
+
+                //先判断缓存中是否有数据
+                if(cacheObj[keywords]){
+                    return renderSuggestList(cacheObj[keywords])
+                }
+
+                debounceSearch(keywords)
+            })
+
+            $('.suggest').on('click','div',function(e){
+                console.log(e.target.outerText);
+                $('#search').val(e.target.outerText)
+            })
+
+            function getSuggestList(kw){
+                $.ajax({
+                    url:'https://suggest.taobao.com/sug?q=' + kw,
+                    dataType:'jsonp',
+                    success:function(res){
+                        renderSuggestList(res) 
+                    }
+                })
+            }
+
+            function renderSuggestList(res){
+                if(res.result.length <=0){
+                    return $('.suggest').empty().hide()
+                }
+
+                let htmlStr = template('suggest-list',res)
+                $('.suggest').html(htmlStr).show()
+
+                //获取到用户输入的内容，当做键
+                let k = $('#search').val().trim()
+
+                //2.需要将数据作为值，进行缓存
+                cacheObj[k] = res
+                console.log(res.result);
+            }
+        })
+    </script>
+</body>
+</html>

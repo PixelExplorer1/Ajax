@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>新闻列表</title>
+    <script src="../js/jQuery.min.js"></script>
+    <script src="../js/template-web.js"></script>
+</head>
+<style>
+    *{
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    .gsq-cont{
+        width: 810px;
+        height: 180px;
+        background-color: #f3f3f3;
+        display: flex;
+        align-items: center;
+        margin-top: 10px;
+    }
+
+    .gsq-cont img{
+        width: 255px;
+        height: 155px;
+    }
+
+    .gsq-cont .gsq-detail{
+        width: 545px;
+        height: 155px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-evenly;
+        margin-left: 10px;
+        text-overflow: calc();
+        padding: 5px 10px;
+    }
+
+    .gsq-cont .gsq-detail .title{
+        font-weight: bold;
+        font-size: 20px;
+    }
+
+    .gsq-cont .gsq-detail .gsq-summary span{
+        background-color: #cdcdcd;
+        font-size: 10px;
+        padding: 3px 10px;
+        border-radius: 16px;
+    }
+
+    .gsq-cont .gsq-detail .gsq-footer{
+        display: flex;
+        justify-content: space-between;
+        font-size: 10px;
+    }
+</style>
+<body>
+    <div class="gsq-news">
+        
+    </div>
+
+
+
+    <script type="text/html" id="gsq-engine">
+        {{each data}}
+        <div class="gsq-cont">
+            <img src="{{'http://www.liulongbin.top:3006' + $value.img}}" alt="图片">
+            <div class="gsq-detail">
+                <p class="title">{{$value.title}}</p>
+                <div class="gsq-summary">
+                    {{each $value.tags}}
+                    <span>{{$value}}</span>
+                    {{/each}}
+                </div>
+                <div class="gsq-footer">
+                    <span>环视全球&nbsp&nbsp{{$value.time | dateForm}}</span>
+                    <span>评论数：{{$value.cmtcount}}</span>
+                </div>
+            </div>
+        </div>
+        {{/each}}
+    </script>
+
+    <script>
+        $(function(){  
+           function getNews(){
+            $.ajax({
+                type:'GET',
+                url:'http://www.liulongbin.top:3006/api/news',
+                success:function(res){
+                    if(res.status !== 200) return alert('获取新闻失败');
+                    for(let i = 0 ;i<res.data.length;i++){
+                        res.data[i].tags = res.data[i].tags.split(',')
+                    };
+                    let news = template('gsq-engine',res);
+                    $('.gsq-news').html(news);
+                }
+            }) 
+           }
+
+           template.defaults.imports.dateForm = function(data){
+                let date = new Date(data)
+                let Y = date.getFullYear()
+                let M = date.getMonth() + 1 <10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1
+                let D = date.getDate() <10 ? '0' + date.getDate() : date.getDate()
+                let h = date.getHours() <10 ? '0' + date.getHours() : date.getHours()
+                let m = date.getMinutes() <10 ? '0' + date.getMinutes() : date.getMinutes()
+                let s = date.getSeconds() <10 ? '0' + date.getSeconds() : date.getSeconds()
+
+                return `${Y}-${M}-${D} ${h}:${m}:${s}`
+            }
+
+           getNews()
+        });
+    </script>
+</body>
+</html>

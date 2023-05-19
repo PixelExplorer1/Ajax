@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="../js/jQuery.min.js"></script>
+</head>
+<style>
+
+    *{
+        padding: 0;
+        margin: 0;
+        box-sizing: border-box;
+    }
+
+    body{
+        background:url(../img/书法背景.jpg) repeat 27.0833vw;
+    }
+
+    li{
+        list-style: none;
+        width: 100%;
+        padding: 0.651vw 1.3021vw;
+
+    }
+
+    .wrapper{
+        margin: 0.651vw 19.5313vw;
+        width: 32.5521vw;
+        height: 44.2708vw;
+        background-color: #f3f3f3;
+        border-radius: 0.651vw;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* 顶部css */
+    .wrapper header{
+        background:linear-gradient(90deg,rgba(209, 203, 187, 0.8), rgba(135, 131, 118, 0.8));
+        height: 3.9063vw;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-left: 1.9531vw;
+        padding-right: 1.9531vw;
+    }
+
+    img{
+        width: 2.6042vw;
+        height: 2.6042vw;
+        background-color: #fff;
+        border-radius: 50%;
+    }
+
+    .wrapper header p{
+        color: #fff;
+        font-size: 1.3021vw;
+    }
+    
+    /* 内容css */
+    .wrapper .cont{
+        overflow: auto;
+        flex: 1;
+    }
+
+    .wrapper .cont::-webkit-scrollbar{
+        width: 0.3255vw;
+    }
+
+    .wrapper .cont::-webkit-scrollbar-thumb{
+        border-radius: 0.651vw;
+        background: #cdcdcd;
+    }
+
+    .wrapper .cont::-webkit-scrollbar-track{
+        background: #f3f3f3;
+        border-radius: 0.651vw;
+    }
+
+    .wrapper .cont li span{
+        display: inline-block;
+        background-color: #fe9697;
+        vertical-align: top;
+        padding: 0.651vw 0.9766vw;
+        border-radius: 0.651vw;
+        margin-left: 1.3021vw;
+    }
+
+    .right img{
+        float: right;
+        margin-left: 1.3021vw;
+    }
+
+    .right span{
+        float: right;
+    }
+
+
+    /* 底部css */
+    .wrapper footer{
+        height: 3.9063vw;
+        background-color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: space-evenly;
+    }
+
+    .wrapper footer input{
+        width: 18.2292vw;
+        height: 2.2786vw;
+        border-radius: 0.651vw;
+        outline: none;
+        border: none;
+        padding-left: 1.3021vw;
+        background-color: #f3f3f3;
+    }
+
+    .wrapper footer button{
+        width: 4.5573vw;
+        height: 2.6042vw;
+        border-radius: 0.651vw;
+        border: none;
+        color: #fff;
+        background-color: #fe9697;
+    }
+
+    .clearfix::after,.clearfix::before{
+        content: '';
+        display: table;
+    }
+
+    .clearfix::after{
+        clear: both;
+    }
+    span{
+        color: aquamarine;;
+    }
+
+    .wrapper footer button{
+        cursor: pointer;
+    }
+</style>
+<body>
+    <div class="wrapper">
+        <!-- 顶部 -->
+        <header>
+            <p>在线客服</p>
+            <img src="../img/客服.png" alt="客服icon">
+        </header>
+        <!-- 内容 -->
+        <div class="cont">
+            <ul>
+                <li class="left">
+                    <img src="../img/客服.png" alt="">
+                    <span>你好！有什么需要帮忙的吗？</span>
+                </li>
+            </ul>
+        </div>
+        <!-- 底部 -->
+        <footer>
+            <img src="../img/用户.webp" alt="用户头像">
+            <input type="text" placeholder="说点什么吧...">
+            <button>发送</button>
+        </footer>
+    </div>
+    <audio src="" autoplay style="display: none;"></audio>
+
+    <script>
+        $(function(){
+            $('button').on({
+                click:function(){
+                    if($('input[type=text]').val().trim() == '') return $('input[type=text]').val('')
+                    let s = $(`<li class="right clearfix">
+                    <img src="../img/用户.webp" alt="">
+                    <span>${$('input[type=text]').val()}</span>
+                </li>`)
+                    $('ul').append(s)
+                    getMsg($('input[type=text]').val())
+                    $('input[type=text]').val('')
+                    resetui()
+                },
+            })
+
+            $('input[type=text]').on({
+                keypress:function(e){
+                    if(e.keyCode == 13){
+                    if($('input[type=text]').val().trim() == '') return $('input[type=text]').val('')
+                    let s = $(`<li class="right clearfix">
+                    <img src="../img/用户.webp" alt="">
+                    <span>${$('input[type=text]').val()}</span>
+                </li>`)
+                    $('ul').append(s)
+                    getMsg($('input[type=text]').val())
+                    $('input[type=text]').val('')
+                    resetui()
+                    }
+                }
+            })
+
+            /* 发起请求获取聊天信息 */
+            function getMsg(text){
+                $.ajax({
+                    type:'GET',
+                    url:'http://www.liulongbin.top:3006/api/robot',
+                    data:{
+                        spoken:text
+                    },
+                    success:function(res){
+                        let s = $(`<li class="left">
+                    <img src="../img/客服.png" alt="">
+                    <span>${res.data.info.text}</span>
+                </li>`)
+                    $('ul').append(s)
+                    getVideo(res.data.info.text)
+                    resetui()
+                    }
+                })
+            }
+
+            /* 语音转换 */
+            function getVideo(text){
+                $.ajax({
+                    type:'GET',
+                    url:'http://www.liulongbin.top:3006/api/synthesize',
+                    data:{
+                        text:text
+                    },
+                    success:function(res){
+                        let a = res.voiceUrl
+                        $('audio').prop('src',a)
+                    }
+                })
+            }
+
+            /* 滚动到底部 */
+            function resetui(){
+                $('.cont').scrollTop('99999')
+                
+            }
+        })
+    </script>
+</body>
+</html>
